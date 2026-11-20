@@ -15,7 +15,7 @@ int main(void) {
     init(true);
 
     window w;
-    w.create(1920, 1080, "labFX");
+    w.create(1920, 1080, "labGL");
     glViewport(0, 0, 1920, 1080);
 
     GLuint emptyVao = 0;

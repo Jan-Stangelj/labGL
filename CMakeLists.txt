@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-project("glBox" LANGUAGES CXX C)
+project("labGL" LANGUAGES CXX C)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -20,17 +20,17 @@ add_subdirectory("vendor/glad")
 add_subdirectory("vendor/stb")
 
 file(GLOB_RECURSE "SOURCES" CONFIGURE_DEPENDS "src/*.cpp")
-add_executable("glBox" "${SOURCES}")
+add_executable("labGL" "${SOURCES}")
 
 # Enable ALL warnings
 if(MSVC)
-  target_compile_options("glBox" PRIVATE /W4)
+  target_compile_options("labGL" PRIVATE /W4)
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-  target_compile_options("glBox" PRIVATE -Wall -Wextra -Wpedantic)
+  target_compile_options("labGL" PRIVATE -Wall -Wextra -Wpedantic)
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-  target_compile_options("glBox" PRIVATE -Wall -Wextra -Wpedantic)
+  target_compile_options("labGL" PRIVATE -Wall -Wextra -Wpedantic)
 endif()
 
-target_include_directories("glBox" PRIVATE ${PROJECT_SOURCE_DIR}/include)
+target_include_directories("labGL" PRIVATE ${PROJECT_SOURCE_DIR}/include)
 
-target_link_libraries("glBox" PRIVATE SDL3::SDL3-static glm glad stb)
+target_link_libraries("labGL" PRIVATE SDL3::SDL3-static glm glad stb)
