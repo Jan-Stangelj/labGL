@@ -9,6 +9,7 @@ void APIENTRY glDebugOutput(GLenum source, GLenum type, unsigned int id, GLenum 
 window::~window() {
     if (m_context != 0) SDL_GL_DestroyContext(m_context);
     if (m_window != nullptr) SDL_DestroyWindow(m_window);
+    if (m_emptyVAO != 0) glDeleteVertexArrays(1, &m_emptyVAO);
 }
 
 window::window(window&& other) noexcept {
@@ -57,6 +58,10 @@ bool window::create(unsigned int width, unsigned int height, const char* title) 
         glDebugMessageCallback(glDebugOutput, nullptr);
         glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
     }
+
+    glGenVertexArrays(1, &m_emptyVAO);
+    glBindVertexArray(m_emptyVAO);
+
     return true;
 }
 

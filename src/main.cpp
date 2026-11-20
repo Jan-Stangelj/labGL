@@ -18,10 +18,6 @@ int main(void) {
     w.create(1920, 1080, "labGL");
     glViewport(0, 0, 1920, 1080);
 
-    GLuint emptyVao = 0;
-    glGenVertexArrays(1, &emptyVao);
-    glBindVertexArray(emptyVao);
-
     constexpr GLfloat vertices[] = {
         //  x          y         z         u         v
         0.5f,  0.5f, 0.0f, 100.0f, 100.0f, // top right

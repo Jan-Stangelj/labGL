@@ -1,5 +1,7 @@
 #pragma once
 
+#include "glad/glad.h"
+
 #include "SDL3/SDL.h"
 
 class window {
@@ -26,5 +28,7 @@ private:
 
     SDL_Window* m_window = nullptr;
     SDL_GLContext m_context = 0;
+
+    GLuint m_emptyVAO = 0;
 
 };
