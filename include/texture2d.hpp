@@ -23,6 +23,8 @@ public:
 
     bool bind(GLuint bindingPoint) const;
 
+    GLuint getID() const { return m_id; } 
+
 private:
 
     GLuint m_id = 0;

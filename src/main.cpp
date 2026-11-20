@@ -41,6 +41,12 @@ int main(void) {
 
     sampler sampl;
 
+    GLuint64 textureHandle = glGetTextureSamplerHandleARB(texture.getID(), sampl.getID());
+    glMakeTextureHandleResidentARB(textureHandle);
+    buffer textureBuffer;
+    textureBuffer.create(sizeof(textureHandle), &textureHandle);
+    textureBuffer.bind(bufferTarget::UNIFORM_BUFFER, 2);
+
     glm::mat4 modelMatrix(1.0f);
     modelMatrix = glm::translate(modelMatrix, glm::vec3(0.0f, -1.0f, 0.0f));
     modelMatrix = glm::rotate(modelMatrix, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
