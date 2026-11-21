@@ -6,7 +6,7 @@ Main:
 - ~~seperate sampler from texture~~
 - ~~anisotropy option in sampler~~
 - ~~sampler parameter editing~~
-- texture2d bindless
+- ~~texture2d bindless~~ Not implimented cz renderdoc strait up refuses to launch it if bindless textures are used.
 - model loading
 - framebuffer
 - compute shaders
