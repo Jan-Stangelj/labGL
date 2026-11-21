@@ -19,13 +19,11 @@ namespace gl {
         bool create(GLsizei width, GLsizei height, GLenum internalFormat, bool mipmapping);
         bool create(const char* file, GLenum internalFormat, bool mipmapping);
 
-        bool loadData(GLenum dataFormat, GLenum dataType, const void* data, GLint mip = 0) const;
+        bool loadData(GLenum dataFormat, GLenum dataType, const void* data) const;
 
         bool generateMipmaps() const;
 
         bool bind(GLuint bindingPoint) const;
-
-        GLuint getID() const { return m_id; }
 
     private:
 

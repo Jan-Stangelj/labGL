@@ -24,8 +24,8 @@ namespace gl {
         float fovY = 60.0f;
         float aspectRatio = 16.0f/9.0f;
 
-        float near = 0.1f;
-        float far = 100.0f;
+        float nearPlane = 0.1f;
+        float farPlane = 100.0f;
 
         float speed = 1.0f;
         float sensitivity = 1.0f;

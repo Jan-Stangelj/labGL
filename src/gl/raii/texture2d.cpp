@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <cmath>
+#include <array>
 
 gl::texture2d::~texture2d() {
     if (m_id != 0) glDeleteTextures(1, &m_id);
@@ -79,8 +80,8 @@ bool gl::texture2d::create(const char* file, GLenum internalFormat, bool mipmapp
     GLenum dataType = hdr ? GL_FLOAT : GL_UNSIGNED_BYTE;
 
     int w, h, n; w = h = n  = 0;
-    if (hdr) data = stbi_loadf(file, &w, &h, &n, 4);
-    else data = stbi_load(file, &w, &h, &n, 4);
+    if (hdr) data = stbi_loadf(file, &w, &h, &n, 0);
+    else data = stbi_load(file, &w, &h, &n, 0);
 
     if (data == nullptr) {
         std::cerr << "ERROR: Failed to load 2D texture " << file << '\n';
@@ -92,7 +93,8 @@ bool gl::texture2d::create(const char* file, GLenum internalFormat, bool mipmapp
         return false;
     }
 
-    if (loadData(GL_RGBA, dataType, data) == false) {
+    std::array<GLenum, 5> dataFormatLUT = {GL_RGBA, GL_R, GL_RG, GL_RGB, GL_RGBA };
+    if (loadData(dataFormatLUT[n], dataType, data) == false) {
         stbi_image_free(data);
         return false;
     }
@@ -101,18 +103,13 @@ bool gl::texture2d::create(const char* file, GLenum internalFormat, bool mipmapp
     return true;
 }
 
-bool gl::texture2d::loadData(GLenum dataFormat, GLenum dataType, const void* data, GLint mip) const {
+bool gl::texture2d::loadData(GLenum dataFormat, GLenum dataType, const void* data) const {
     if (m_id == 0) {
         std::cout << "NOTE: loadData called with no 2D texture present. Did nothing.\n";
         return false;
     }
 
-    if (mip >= m_mips) {
-        std::cout << "WARNING: Cannot write into non-existent 2D texture mips. Aborting.\n";
-        return false;
-    }
-
-    glTextureSubImage2D(m_id, mip, 0, 0, m_width, m_height, dataFormat, dataType, data);
+    glTextureSubImage2D(m_id, 0, 0, 0, m_width, m_height, dataFormat, dataType, data);
     return true;
 }
 

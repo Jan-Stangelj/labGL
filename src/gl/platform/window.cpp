@@ -7,6 +7,7 @@
 void APIENTRY glDebugOutput(GLenum source, GLenum type, unsigned int id, GLenum severity, GLsizei length, const char *message, const void *userParam);
 
 gl::window::~window() {
+    select();
     if (m_emptyVAO != 0) glDeleteVertexArrays(1, &m_emptyVAO);
     if (m_context != 0) SDL_GL_DestroyContext(m_context);
     if (m_window != nullptr) SDL_DestroyWindow(m_window);
@@ -50,6 +51,11 @@ gl::window& gl::window::operator=(window&& other) noexcept {
 }
 
 bool gl::window::create(unsigned int width, unsigned int height, const char* title) {
+    if (m_context != 0) select();
+    if (m_emptyVAO != 0) glDeleteVertexArrays(1, &m_emptyVAO);
+    if (m_context != 0) SDL_GL_DestroyContext(m_context);
+    if (m_window != nullptr) SDL_DestroyWindow(m_window);
+
     m_window = SDL_CreateWindow(title, width, height, SDL_WINDOW_OPENGL);
     if (m_window == nullptr) {
         std::cerr << "ERROR: Failed to create SDL window, aborting: " << SDL_GetError() << '\n';
@@ -58,11 +64,14 @@ bool gl::window::create(unsigned int width, unsigned int height, const char* tit
     m_context = SDL_GL_CreateContext(m_window);
     if (m_context == nullptr) {
         std::cerr << "ERROR: Failed to create OpenGL context, aborting: " << SDL_GetError() << '\n';
+        SDL_DestroyWindow(m_window);
         return false;
     }
 
     if (!gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress)) {
         std::cerr << "ERROR: Failed to initialize GLAD. Aborting.\n";
+        SDL_GL_DestroyContext(m_context);
+        SDL_DestroyWindow(m_window);
         return false;
     }
 

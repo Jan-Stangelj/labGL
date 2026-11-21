@@ -9,8 +9,8 @@ gl::debugCamera::debugCamera() {
 gl::debugCamera::debugCamera(const debugCamera& other) {
     fovY = other.fovY;
     aspectRatio = other.aspectRatio;
-    near = other.near;
-    far = other.far;
+    nearPlane = other.nearPlane;
+    farPlane = other.farPlane;
     speed = other.speed;
     sensitivity = other.sensitivity;
 
@@ -28,8 +28,8 @@ gl::debugCamera& gl::debugCamera::operator=(const debugCamera& other) {
     if (this != &other) {
         fovY = other.fovY;
         aspectRatio = other.aspectRatio;
-        near = other.near;
-        far = other.far;
+        nearPlane = other.nearPlane;
+        farPlane = other.farPlane;
         speed = other.speed;
         sensitivity = other.sensitivity;
 
@@ -84,7 +84,7 @@ void gl::debugCamera::apply(GLuint bindingPoint) {
     glm::mat4 viewMatrix(1.0f);
     glm::mat4 projectionMatrix(1.0f);
 
-    projectionMatrix = glm::perspective(glm::radians(fovY), aspectRatio, near, far);
+    projectionMatrix = glm::perspective(glm::radians(fovY), aspectRatio, nearPlane, farPlane);
     viewMatrix = glm::lookAt(m_origin, lookAt, glm::vec3(0.0f, 1.0f, 0.0f));
     glm::mat4 cameraMatrixData[] = { viewMatrix, projectionMatrix };
 

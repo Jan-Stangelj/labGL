@@ -34,8 +34,6 @@ namespace gl {
         void setFilter(samplerFilter filter);
         void setAnisotropy(GLfloat level);
 
-        GLuint getID() const { return m_id; }
-
     private:
 
         GLuint m_id = 0;
