@@ -1,19 +1,19 @@
-#include "shader.hpp"
+#include "gl/shader.hpp"
 
 #include <string>
 #include <iostream>
 #include <sstream>
 #include <fstream>
 
-shader::~shader() {
+gl::shader::~shader() {
     if (m_id) glDeleteProgram(m_id);
 }
 
-shader::shader(shader&& other) noexcept {
+gl::shader::shader(shader&& other) noexcept {
     m_id = other.m_id;
     other.m_id = 0;
 }
-shader& shader::operator=(shader&& other) noexcept {
+gl::shader& gl::shader::operator=(shader&& other) noexcept {
     if (this != &other) {
         if (m_id)
             glDeleteProgram(m_id);
@@ -23,7 +23,7 @@ shader& shader::operator=(shader&& other) noexcept {
     return *this;
 }
 
-bool shader::loadFromFile(const char* vertexPath, const char* fragmentPath) {
+bool gl::shader::loadFromFile(const char* vertexPath, const char* fragmentPath) {
 
     std::string vertexCode;
     std::string fragmentCode;
@@ -59,7 +59,7 @@ bool shader::loadFromFile(const char* vertexPath, const char* fragmentPath) {
     return loadFromText(vertexCode.c_str(), fragmentCode.c_str());
 }
 
-bool shader::loadFromText(const char* vertexCode, const char* fragmentCode) {
+bool gl::shader::loadFromText(const char* vertexCode, const char* fragmentCode) {
     if (vertexCode == nullptr || fragmentCode == nullptr) {
         std::cout << "WARNING: No shader source code provided. Did nothing.\n";
         return false;
@@ -123,7 +123,7 @@ bool shader::loadFromText(const char* vertexCode, const char* fragmentCode) {
     return true;
 }
 
-bool shader::use() const {
+bool gl::shader::use() const {
     if (m_id == 0) {
         std::cout << "NOTE: Use called with no shader present. Did nothing.\n";
         return false;

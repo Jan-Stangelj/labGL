@@ -1,10 +1,10 @@
-#include "init.hpp"
+#include "gl/init.hpp"
 
 #include "SDL3/SDL.h"
 
 #include <iostream>
 
-bool init(bool debug) {
+bool gl::init(bool debug) {
     if (!SDL_Init(SDL_INIT_VIDEO)) {
         std::cerr << "Failed to init SDL3, aborting: " << SDL_GetError() << '\n';
         return false;
@@ -34,7 +34,7 @@ bool init(bool debug) {
     return true;
 }
 
-bool quit() {
+bool gl::quit() {
     SDL_Quit();
     return true;
 }

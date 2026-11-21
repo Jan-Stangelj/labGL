@@ -1,15 +1,15 @@
-#include "texture2d.hpp"
+#include "gl/texture2d.hpp"
 
 #include "stb/stb_image.h"
 
 #include <iostream>
 #include <cmath>
 
-texture2d::~texture2d() {
+gl::texture2d::~texture2d() {
     if (m_id != 0) glDeleteTextures(1, &m_id);
 }
 
-texture2d::texture2d(texture2d&& other) noexcept {
+gl::texture2d::texture2d(texture2d&& other) noexcept {
     m_id = other.m_id;
     m_width = other.m_width;
     m_height = other.m_height;
@@ -21,7 +21,7 @@ texture2d::texture2d(texture2d&& other) noexcept {
     other.m_mips = 0;
 }
 
-texture2d& texture2d::operator=(texture2d&& other) noexcept {
+gl::texture2d& gl::texture2d::operator=(texture2d&& other) noexcept {
     if (this != &other) {
         if (m_id != 0) {
             std::cout << "WARNING: 2D texture already present on move destination. Overwriting.\n";
@@ -40,7 +40,7 @@ texture2d& texture2d::operator=(texture2d&& other) noexcept {
     return *this;
 }
 
-bool texture2d::create(GLsizei width, GLsizei height, GLenum internalFormat, bool mipmapping) {
+bool gl::texture2d::create(GLsizei width, GLsizei height, GLenum internalFormat, bool mipmapping) {
     if (width <= 0 || height <= 0) {
         std::cerr << "ERROR: Cannot create texture with dimensions, aborting: " << width << ' ' << height << '\n';
         return false;
@@ -71,7 +71,7 @@ bool texture2d::create(GLsizei width, GLsizei height, GLenum internalFormat, boo
     return true;
 }
 
-bool texture2d::create(const char* file, GLenum internalFormat, bool mipmapping) {
+bool gl::texture2d::create(const char* file, GLenum internalFormat, bool mipmapping) {
     stbi_set_flip_vertically_on_load(true);
 
     void* data = nullptr;
@@ -101,7 +101,7 @@ bool texture2d::create(const char* file, GLenum internalFormat, bool mipmapping)
     return true;
 }
 
-bool texture2d::loadData(GLenum dataFormat, GLenum dataType, const void* data, GLint mip) const {
+bool gl::texture2d::loadData(GLenum dataFormat, GLenum dataType, const void* data, GLint mip) const {
     if (m_id == 0) {
         std::cout << "NOTE: loadData called with no 2D texture present. Did nothing.\n";
         return false;
@@ -116,7 +116,7 @@ bool texture2d::loadData(GLenum dataFormat, GLenum dataType, const void* data, G
     return true;
 }
 
-bool texture2d::generateMipmaps() const {
+bool gl::texture2d::generateMipmaps() const {
     if (m_id == 0) {
         std::cout << "NOTE: generateMipmaps called with no 2D texture present. Did nothing.\n";
         return false;
@@ -131,7 +131,7 @@ bool texture2d::generateMipmaps() const {
     return true;
 }
 
-bool texture2d::bind(GLuint bindingPoint) const {
+bool gl::texture2d::bind(GLuint bindingPoint) const {
     if (m_id == 0) {
         std::cout << "NOTE: bind called with no 2D texture present. Did nothing.\n";
         return false;

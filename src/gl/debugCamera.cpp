@@ -1,12 +1,12 @@
-#include "debugCamera.hpp"
+#include "gl/debugCamera.hpp"
 
 #include "glm/ext.hpp"
 
-debugCamera::debugCamera() {
+gl::debugCamera::debugCamera() {
     m_matrixBuffer.create(sizeof(glm::mat4) * 2);
 }
 
-debugCamera::debugCamera(const debugCamera& other) {
+gl::debugCamera::debugCamera(const debugCamera& other) {
     fovY = other.fovY;
     aspectRatio = other.aspectRatio;
     near = other.near;
@@ -24,7 +24,7 @@ debugCamera::debugCamera(const debugCamera& other) {
     m_matrixBuffer.create(sizeof(glm::mat4) * 2);
 }
 
-debugCamera& debugCamera::operator=(const debugCamera& other) {
+gl::debugCamera& gl::debugCamera::operator=(const debugCamera& other) {
     if (this != &other) {
         fovY = other.fovY;
         aspectRatio = other.aspectRatio;
@@ -45,7 +45,7 @@ debugCamera& debugCamera::operator=(const debugCamera& other) {
     return *this;
 }
 
-void debugCamera::updateDirection(float x, float y) {
+void gl::debugCamera::updateDirection(float x, float y) {
     x *= sensitivity;
     y *= sensitivity;
 
@@ -56,7 +56,7 @@ void debugCamera::updateDirection(float x, float y) {
     if (m_pitch < -89.0f) m_pitch = -89.0f;
 }
 
-void debugCamera::updateOrigin(float deltaTime) {
+void gl::debugCamera::updateOrigin(float deltaTime) {
     const bool* keys = SDL_GetKeyboardState(nullptr);
 
     float velocity = speed * deltaTime;
@@ -69,7 +69,7 @@ void debugCamera::updateOrigin(float deltaTime) {
     if (keys[SDL_SCANCODE_Q]) m_origin -= m_up * velocity;
 }
 
-void debugCamera::apply(GLuint bindingPoint) {
+void gl::debugCamera::apply(GLuint bindingPoint) {
 
     m_front.x = glm::cos(glm::radians(m_yaw)) * glm::cos(glm::radians(m_pitch));
     m_front.y = glm::sin(glm::radians(m_pitch));

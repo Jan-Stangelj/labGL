@@ -1,4 +1,4 @@
-#include "window.hpp"
+#include "gl/window.hpp"
 
 #include "glad/glad.h"
 
@@ -6,13 +6,13 @@
 
 void APIENTRY glDebugOutput(GLenum source, GLenum type, unsigned int id, GLenum severity, GLsizei length, const char *message, const void *userParam);
 
-window::~window() {
+gl::window::~window() {
     if (m_emptyVAO != 0) glDeleteVertexArrays(1, &m_emptyVAO);
     if (m_context != 0) SDL_GL_DestroyContext(m_context);
     if (m_window != nullptr) SDL_DestroyWindow(m_window);
 }
 
-window::window(window&& other) noexcept {
+gl::window::window(window&& other) noexcept {
     m_window = other.m_window;
     m_context = other.m_context;
     m_emptyVAO = other.m_emptyVAO;
@@ -22,7 +22,7 @@ window::window(window&& other) noexcept {
     other.m_emptyVAO = 0;
 }
 
-window& window::operator=(window&& other) noexcept {
+gl::window& gl::window::operator=(window&& other) noexcept {
     if (this != &other) {
         if (m_emptyVAO != 0) {
             std::cout << "WARNING: Empty VAO already present on move destination. Overwriting.\n";
@@ -49,7 +49,7 @@ window& window::operator=(window&& other) noexcept {
     return *this;
 }
 
-bool window::create(unsigned int width, unsigned int height, const char* title) {
+bool gl::window::create(unsigned int width, unsigned int height, const char* title) {
     m_window = SDL_CreateWindow(title, width, height, SDL_WINDOW_OPENGL);
     if (m_window == nullptr) {
         std::cerr << "ERROR: Failed to create SDL window, aborting: " << SDL_GetError() << '\n';
@@ -80,7 +80,7 @@ bool window::create(unsigned int width, unsigned int height, const char* title) 
     return true;
 }
 
-bool window::swapBuffers() {
+bool gl::window::swapBuffers() {
     if (!SDL_GL_SwapWindow(m_window)) {
         std::cout << "WARNING: Failed to swap buffers: " << SDL_GetError() << '\n';
         return false;
@@ -88,7 +88,7 @@ bool window::swapBuffers() {
     return true;
 }
 
-bool window::select() const {
+bool gl::window::select() const {
     if (!SDL_GL_MakeCurrent(m_window, m_context)) {
         std::cout << "WARNING: Failed to make context current: " << SDL_GetError() << '\n';
         return false;
@@ -96,7 +96,7 @@ bool window::select() const {
     return true;
 }
 
-bool window::captureMouse(bool capture) const {
+bool gl::window::captureMouse(bool capture) const {
     if (!SDL_SetWindowRelativeMouseMode(m_window, capture)) {
         std::cout << "NOTE: Failed to capture mouse.\n";
         return false;

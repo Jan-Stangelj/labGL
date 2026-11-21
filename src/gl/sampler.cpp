@@ -1,24 +1,24 @@
-#include "sampler.hpp"
+#include "gl/sampler.hpp"
 
 #include <algorithm>
 #include <iostream>
 
-sampler::sampler() {
+gl::sampler::sampler() {
     glCreateSamplers(1, &m_id);
 
     setWrap(REPEAT);
     setFilter(ANISOTROPIC);
     setAnisotropy(16.0f);
 }
-sampler::~sampler() {
+gl::sampler::~sampler() {
     glDeleteSamplers(1, &m_id);
 }
 
-sampler::sampler(sampler&& other) noexcept {
+gl::sampler::sampler(sampler&& other) noexcept {
     m_id = other.m_id;
     other.m_id = 0;
 }
-sampler& sampler::operator=(sampler&& other) noexcept {
+gl::sampler& gl::sampler::operator=(sampler&& other) noexcept {
     if (this != &other) {
         if (m_id != 0) {
             std::cout << "WARNING: sampler already present on move destination. Overwriting.\n";
@@ -30,7 +30,7 @@ sampler& sampler::operator=(sampler&& other) noexcept {
     return *this;
 }
 
-bool sampler::bind(GLuint bindingPoint) const {
+bool gl::sampler::bind(GLuint bindingPoint) const {
     if (m_id == 0) {
         std::cout << "NOTE: bind called with no sampler present. Did nothing.\n";
         return false;
@@ -39,7 +39,7 @@ bool sampler::bind(GLuint bindingPoint) const {
     return true;
 }
 
-void sampler::setWrap(samplerWrap wrap) {
+void gl::sampler::setWrap(samplerWrap wrap) {
     if (m_id == 0) {
         std::cout << "NOTE: setWrap called with no sampler present. Did nothing.\n";
         return;
@@ -49,7 +49,7 @@ void sampler::setWrap(samplerWrap wrap) {
     glSamplerParameteri(m_id, GL_TEXTURE_WRAP_R, wrap);
 }
 
-void sampler::setFilter(samplerFilter filter) {
+void gl::sampler::setFilter(samplerFilter filter) {
     if (m_id == 0) {
         std::cout << "NOTE: setFilter called with no sampler present. Did nothing.\n";
         return;
@@ -71,7 +71,7 @@ void sampler::setFilter(samplerFilter filter) {
     }
 }
 
-void sampler::setAnisotropy(GLfloat level) {
+void gl::sampler::setAnisotropy(GLfloat level) {
     if (m_id == 0) {
         std::cout << "NOTE: setAnisotropy called with no sampler present. Did nothing.\n";
         return;

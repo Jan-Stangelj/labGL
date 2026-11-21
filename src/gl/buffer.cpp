@@ -1,12 +1,12 @@
-#include "buffer.hpp"
+#include "gl/buffer.hpp"
 
 #include <iostream>
 
-buffer::~buffer() {
+gl::buffer::~buffer() {
     if (m_id != 0) glDeleteBuffers(1, &m_id);
 }
 
-buffer::buffer(buffer&& other) noexcept {
+gl::buffer::buffer(buffer&& other) noexcept {
     m_id = other.m_id;
     m_size = other.m_size;
 
@@ -14,7 +14,7 @@ buffer::buffer(buffer&& other) noexcept {
     other.m_size = 0;
 }
 
-buffer& buffer::operator=(buffer&& other) noexcept {
+gl::buffer& gl::buffer::operator=(buffer&& other) noexcept {
     if (this != &other) {
         if (m_id != 0) {
             std::cout << "WARNING: Buffer already present on move destination. Overwriting.\n";
@@ -29,7 +29,7 @@ buffer& buffer::operator=(buffer&& other) noexcept {
     return *this;
 }
 
-bool buffer::create(GLsizeiptr size, const void* data) {
+bool gl::buffer::create(GLsizeiptr size, const void* data) {
     if (size == 0) {
         std::cerr << "ERROR: Cannot create buffer with size of 0. Aborting\n";
         return false;
@@ -55,7 +55,7 @@ bool buffer::create(GLsizeiptr size, const void* data) {
     return true;
 }
 
-bool buffer::write(GLintptr offset, GLsizeiptr size, const void* data) const {
+bool gl::buffer::write(GLintptr offset, GLsizeiptr size, const void* data) const {
     if (m_id == 0) {
         std::cout << "NOTE: write called with no buffer present. Did nothing.\n";
         return false;
@@ -73,7 +73,7 @@ bool buffer::write(GLintptr offset, GLsizeiptr size, const void* data) const {
     return true;
 }
 
-bool buffer::bind(bufferTarget type, GLuint bindingPoint) const {
+bool gl::buffer::bind(bufferTarget type, GLuint bindingPoint) const {
     if (m_id == 0) {
         std::cout << "NOTE: bind called with no buffer present. Did nothing.\n";
         return false;

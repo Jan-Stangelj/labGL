@@ -1,21 +1,21 @@
-#include "init.hpp"
-#include "window.hpp"
-#include "shader.hpp"
-#include "buffer.hpp"
-#include "texture2d.hpp"
-#include "debugCamera.hpp"
-#include "stopwatch.hpp"
-#include "sampler.hpp"
+#include "gl/init.hpp"
+#include "gl/window.hpp"
+#include "gl/shader.hpp"
+#include "gl/buffer.hpp"
+#include "gl/texture2d.hpp"
+#include "gl/debugCamera.hpp"
+#include "gl/stopwatch.hpp"
+#include "gl/sampler.hpp"
 
 #include "glm/glm.hpp"
 #include "glm/ext.hpp"
 
 int main(void) {
 
-    init(true);
+    gl::init(true);
 
     {
-        window w;
+        gl::window w;
         w.create(1920, 1080, "labGL");
         glViewport(0, 0, 1920, 1080);
 
@@ -59,7 +59,7 @@ int main(void) {
             -0.5f,  0.5f, -0.5f, 1.0f, 1.0f,
             0.5f,  0.5f, -0.5f, 0.0f, 1.0f
         };
-        buffer vertexBuffer;
+        gl::buffer vertexBuffer;
         vertexBuffer.create(sizeof(vertices), vertices);
 
         constexpr GLuint indices[] = {
@@ -71,29 +71,29 @@ int main(void) {
             20, 21, 22, 20, 22, 23  // -Z
         };
         constexpr GLsizei indexCount = sizeof(indices) / sizeof(indices[0]);
-        buffer indexBuffer;
+        gl::buffer indexBuffer;
         indexBuffer.create(sizeof(indices), indices);
 
-        texture2d texture;
+        gl::texture2d texture;
         texture.create("../assets/textures/red_brick.png", GL_RGB8, true);
         texture.generateMipmaps();
 
-        sampler sampl;
+        gl::sampler sampler;
 
         glm::mat4 modelMatrix(1.0f);
         modelMatrix = glm::translate(modelMatrix, glm::vec3(0.0f, 0.0f, -1.2f));
         modelMatrix = glm::rotate(modelMatrix, glm::radians(20.0f), glm::vec3(1.0f, 0.0f, 0.0f));
         modelMatrix = glm::rotate(modelMatrix, glm::radians(-35.0f), glm::vec3(0.0f, 1.0f, 0.0f));
         modelMatrix = glm::scale(modelMatrix, glm::vec3(1.2f));
-        buffer modelMatrixBuffer;
+        gl::buffer modelMatrixBuffer;
         modelMatrixBuffer.create(sizeof(glm::mat4), &modelMatrix);
 
-        debugCamera cam;
+        gl::debugCamera cam;
 
-        shader simpleShader;
+        gl::shader simpleShader;
         simpleShader.loadFromFile("../assets/shaders/shader.vert", "../assets/shaders/shader.frag");
 
-        stopwatch time;
+        gl::stopwatch time;
         double deltaTime = 0.0;
         bool mouseCaptured = false;
         bool running = true;
@@ -118,13 +118,13 @@ int main(void) {
             glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-            vertexBuffer.bind(bufferTarget::SHADER_STORAGE_BUFFER, 0);
-            indexBuffer.bind( bufferTarget::SHADER_STORAGE_BUFFER, 1);
+            vertexBuffer.bind(gl::bufferTarget::SHADER_STORAGE_BUFFER, 0);
+            indexBuffer.bind( gl::bufferTarget::SHADER_STORAGE_BUFFER, 1);
 
-            modelMatrixBuffer.bind(bufferTarget::UNIFORM_BUFFER, 1);
+            modelMatrixBuffer.bind(gl::bufferTarget::UNIFORM_BUFFER, 1);
 
             texture.bind(0);
-            sampl.bind(0);
+            sampler.bind(0);
 
             simpleShader.use();
 
@@ -134,7 +134,7 @@ int main(void) {
         }
     }
 
-    quit();
+    gl::quit();
     return 0;
 
 }
