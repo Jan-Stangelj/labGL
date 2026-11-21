@@ -21,6 +21,10 @@ bool init(bool debug) {
         std::cerr << "Failed to set OpenGL attribute, aborting: " << SDL_GetError() << '\n';
         return false;
     }
+    if (!SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24)) {
+        std::cerr << "Failed to set OpenGL attribute, aborting: " << SDL_GetError() << '\n';
+        return false;
+    }
     if (debug) {
         if (!SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG)) {
             std::cerr << "Failed to set OpenGL attribute, aborting: " << SDL_GetError() << '\n';

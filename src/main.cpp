@@ -19,20 +19,58 @@ int main(void) {
         w.create(1920, 1080, "labGL");
         glViewport(0, 0, 1920, 1080);
 
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LESS);
+
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
+        glFrontFace(GL_CCW);
+
         constexpr GLfloat vertices[] = {
-            //  x          y         z         u         v
-            0.5f,  0.5f, 0.0f, 100.0f, 100.0f, // top right
-            0.5f, -0.5f, 0.0f, 100.0f, 0.0f, // bottom right
-            -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, // bottom left
-            -0.5f,  0.5f, 0.0f,  0.0f, 100.0f // top left
+            //  x      y      z      u     v
+            // +X
+            0.5f, -0.5f,  0.5f, 0.0f, 0.0f,
+            0.5f, -0.5f, -0.5f, 1.0f, 0.0f,
+            0.5f,  0.5f, -0.5f, 1.0f, 1.0f,
+            0.5f,  0.5f,  0.5f, 0.0f, 1.0f,
+            // -X
+            -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
+            -0.5f, -0.5f,  0.5f, 1.0f, 0.0f,
+            -0.5f,  0.5f,  0.5f, 1.0f, 1.0f,
+            -0.5f,  0.5f, -0.5f, 0.0f, 1.0f,
+            // +Y
+            -0.5f,  0.5f,  0.5f, 0.0f, 0.0f,
+            0.5f,  0.5f,  0.5f, 1.0f, 0.0f,
+            0.5f,  0.5f, -0.5f, 1.0f, 1.0f,
+            -0.5f,  0.5f, -0.5f, 0.0f, 1.0f,
+            // -Y
+            -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
+            0.5f, -0.5f, -0.5f, 1.0f, 0.0f,
+            0.5f, -0.5f,  0.5f, 1.0f, 1.0f,
+            -0.5f, -0.5f,  0.5f, 0.0f, 1.0f,
+            // +Z
+            -0.5f, -0.5f,  0.5f, 0.0f, 0.0f,
+            0.5f, -0.5f,  0.5f, 1.0f, 0.0f,
+            0.5f,  0.5f,  0.5f, 1.0f, 1.0f,
+            -0.5f,  0.5f,  0.5f, 0.0f, 1.0f,
+            // -Z
+            0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
+            -0.5f, -0.5f, -0.5f, 1.0f, 0.0f,
+            -0.5f,  0.5f, -0.5f, 1.0f, 1.0f,
+            0.5f,  0.5f, -0.5f, 0.0f, 1.0f
         };
         buffer vertexBuffer;
         vertexBuffer.create(sizeof(vertices), vertices);
 
         constexpr GLuint indices[] = {
-            0, 1, 3,
-            1, 2, 3
-        }; 
+            0, 1, 2, 0, 2, 3,       // +X
+            4, 5, 6, 4, 6, 7,       // -X
+            8, 9, 10, 8, 10, 11,    // +Y
+            12, 13, 14, 12, 14, 15, // -Y
+            16, 17, 18, 16, 18, 19, // +Z
+            20, 21, 22, 20, 22, 23  // -Z
+        };
+        constexpr GLsizei indexCount = sizeof(indices) / sizeof(indices[0]);
         buffer indexBuffer;
         indexBuffer.create(sizeof(indices), indices);
 
@@ -43,9 +81,10 @@ int main(void) {
         sampler sampl;
 
         glm::mat4 modelMatrix(1.0f);
-        modelMatrix = glm::translate(modelMatrix, glm::vec3(0.0f, -1.0f, 0.0f));
-        modelMatrix = glm::rotate(modelMatrix, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-        modelMatrix = glm::scale(modelMatrix, glm::vec3(100.0f));
+        modelMatrix = glm::translate(modelMatrix, glm::vec3(0.0f, 0.0f, -1.2f));
+        modelMatrix = glm::rotate(modelMatrix, glm::radians(20.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+        modelMatrix = glm::rotate(modelMatrix, glm::radians(-35.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        modelMatrix = glm::scale(modelMatrix, glm::vec3(1.2f));
         buffer modelMatrixBuffer;
         modelMatrixBuffer.create(sizeof(glm::mat4), &modelMatrix);
 
@@ -77,15 +116,19 @@ int main(void) {
             cam.apply(0);
 
             glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-            glClear(GL_COLOR_BUFFER_BIT);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             vertexBuffer.bind(bufferTarget::SHADER_STORAGE_BUFFER, 0);
             indexBuffer.bind( bufferTarget::SHADER_STORAGE_BUFFER, 1);
+
+            modelMatrixBuffer.bind(bufferTarget::UNIFORM_BUFFER, 1);
+
             texture.bind(0);
             sampl.bind(0);
-            modelMatrixBuffer.bind(bufferTarget::UNIFORM_BUFFER, 1);
+
             simpleShader.use();
-            glDrawArrays(GL_TRIANGLES, 0, 6);
+
+            glDrawArrays(GL_TRIANGLES, 0, indexCount);
             
             w.swapBuffers();
         }
