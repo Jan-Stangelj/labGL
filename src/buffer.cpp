@@ -8,7 +8,10 @@ buffer::~buffer() {
 
 buffer::buffer(buffer&& other) noexcept {
     m_id = other.m_id;
+    m_size = other.m_size;
+
     other.m_id = 0;
+    other.m_size = 0;
 }
 
 buffer& buffer::operator=(buffer&& other) noexcept {
@@ -18,7 +21,10 @@ buffer& buffer::operator=(buffer&& other) noexcept {
             glDeleteBuffers(1, &m_id);
         }
         m_id = other.m_id;
+        m_size = other.m_size;
+
         other.m_id = 0;
+        other.m_size = 0;
     }
     return *this;
 }
@@ -28,8 +34,6 @@ bool buffer::create(GLsizeiptr size, const void* data) {
         std::cerr << "ERROR: Cannot create buffer with size of 0. Aborting\n";
         return false;
     }
-
-    m_size = size;
 
     if (m_id != 0) {
         std::cout << "WARNING: Buffer already present. Deleting and re-allocating.\n";
@@ -44,6 +48,8 @@ bool buffer::create(GLsizeiptr size, const void* data) {
         return false;
     }
 
+    m_size = size;
+    
     glNamedBufferStorage(m_id, size, data, GL_DYNAMIC_STORAGE_BIT);
 
     return true;

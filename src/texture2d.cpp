@@ -13,9 +13,12 @@ texture2d::texture2d(texture2d&& other) noexcept {
     m_id = other.m_id;
     m_width = other.m_width;
     m_height = other.m_height;
+    m_mips = other.m_mips;
+
     other.m_id = 0;
     other.m_width = 0;
     other.m_height = 0;
+    other.m_mips = 0;
 }
 
 texture2d& texture2d::operator=(texture2d&& other) noexcept {
@@ -27,9 +30,12 @@ texture2d& texture2d::operator=(texture2d&& other) noexcept {
         m_id = other.m_id;
         m_width = other.m_width;
         m_height = other.m_height;
+        m_mips = other.m_mips;
+
         other.m_id = 0;
         other.m_width = 0;
         other.m_height = 0;
+        other.m_mips = 0;
     }
     return *this;
 }
@@ -39,9 +45,6 @@ bool texture2d::create(GLsizei width, GLsizei height, GLenum internalFormat, boo
         std::cerr << "ERROR: Cannot create texture with dimensions, aborting: " << width << ' ' << height << '\n';
         return false;
     }
-    
-    m_width = width;
-    m_height = height;
 
     if (m_id != 0) {
         std::cout << "WARNING: 2D texture already present. Deleting and re-allocating\n";
@@ -56,33 +59,43 @@ bool texture2d::create(GLsizei width, GLsizei height, GLenum internalFormat, boo
         return false;
     }
 
-    m_mips = 1;
-    if (mipmapping) m_mips = 1 + std::ceil(std::log2(std::max(width, height)));
+    GLsizei mips = 1;
+    if (mipmapping) mips = 1 + std::floor(std::log2(std::max(width, height)));
 
-    glTextureStorage2D(m_id, m_mips, internalFormat, width, height);
+    glTextureStorage2D(m_id, mips, internalFormat, width, height);
+
+    m_width = width;
+    m_height = height;
+    m_mips = mips;
 
     return true;
 }
 
 bool texture2d::create(const char* file, GLenum internalFormat, bool mipmapping) {
-    int nrChannels;
     stbi_set_flip_vertically_on_load(true);
 
     void* data = nullptr;
     bool hdr = stbi_is_hdr(file);
     GLenum dataType = hdr ? GL_FLOAT : GL_UNSIGNED_BYTE;
 
-    if (hdr) data = stbi_loadf(file, &m_width, &m_height, &nrChannels, 4);
-    else data = stbi_load(file, &m_width, &m_height, &nrChannels, 4);
+    int w, h, n; w = h = n  = 0;
+    if (hdr) data = stbi_loadf(file, &w, &h, &n, 4);
+    else data = stbi_load(file, &w, &h, &n, 4);
 
     if (data == nullptr) {
         std::cerr << "ERROR: Failed to load 2D texture " << file << '\n';
         return false;
     }
 
-    if (create(m_width, m_height, internalFormat, mipmapping) == false) return false;
+    if (create(w, h, internalFormat, mipmapping) == false) {
+        stbi_image_free(data);
+        return false;
+    }
 
-    if (loadData(GL_RGBA, dataType, data) == false) return false;
+    if (loadData(GL_RGBA, dataType, data) == false) {
+        stbi_image_free(data);
+        return false;
+    }
 
     stbi_image_free(data);
     return true;

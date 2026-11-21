@@ -7,29 +7,44 @@
 void APIENTRY glDebugOutput(GLenum source, GLenum type, unsigned int id, GLenum severity, GLsizei length, const char *message, const void *userParam);
 
 window::~window() {
+    if (m_emptyVAO != 0) glDeleteVertexArrays(1, &m_emptyVAO);
     if (m_context != 0) SDL_GL_DestroyContext(m_context);
     if (m_window != nullptr) SDL_DestroyWindow(m_window);
-    if (m_emptyVAO != 0) glDeleteVertexArrays(1, &m_emptyVAO);
 }
 
 window::window(window&& other) noexcept {
     m_window = other.m_window;
     m_context = other.m_context;
+    m_emptyVAO = other.m_emptyVAO;
 
     other.m_window = nullptr;
     other.m_context = 0;
+    other.m_emptyVAO = 0;
 }
 
 window& window::operator=(window&& other) noexcept {
     if (this != &other) {
-        SDL_GL_DestroyContext(m_context);
-        SDL_DestroyWindow(m_window);
+        if (m_emptyVAO != 0) {
+            std::cout << "WARNING: Empty VAO already present on move destination. Overwriting.\n";
+            select();
+            glDeleteVertexArrays(1, &m_emptyVAO);
+        }
+        if (m_context != 0) {
+            std::cout << "WARNING: OpenGL context already present on move destination. Overwriting.\n";
+            SDL_GL_DestroyContext(m_context);
+        }
+        if (m_window != nullptr) {
+            std::cout << "WARNING: Window already present on move destination. Overwriting.\n";
+            SDL_DestroyWindow(m_window);
+        }
 
         m_window = other.m_window;
         m_context = other.m_context;
+        m_emptyVAO = other.m_emptyVAO;
 
         other.m_window = nullptr;
         other.m_context = 0;
+        other.m_emptyVAO = 0;
     }
     return *this;
 }
