@@ -1,4 +1,4 @@
-#include "gl/init.hpp"
+#include "gl/platform/init.hpp"
 
 #include "SDL3/SDL.h"
 

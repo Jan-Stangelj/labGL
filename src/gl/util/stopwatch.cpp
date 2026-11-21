@@ -1,4 +1,4 @@
-#include "gl/stopwatch.hpp"
+#include "gl/util/stopwatch.hpp"
 
 gl::stopwatch::stopwatch() {
     m_start = std::chrono::high_resolution_clock::now();

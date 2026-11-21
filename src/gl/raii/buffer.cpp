@@ -1,4 +1,4 @@
-#include "gl/buffer.hpp"
+#include "gl/raii/buffer.hpp"
 
 #include <iostream>
 

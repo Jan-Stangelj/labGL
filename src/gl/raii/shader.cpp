@@ -1,4 +1,4 @@
-#include "gl/shader.hpp"
+#include "gl/raii/shader.hpp"
 
 #include <string>
 #include <iostream>

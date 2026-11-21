@@ -1,4 +1,4 @@
-#include "gl/window.hpp"
+#include "gl/platform/window.hpp"
 
 #include "glad/glad.h"
 

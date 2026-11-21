@@ -1,4 +1,4 @@
-#include "gl/sampler.hpp"
+#include "gl/raii/sampler.hpp"
 
 #include <algorithm>
 #include <iostream>

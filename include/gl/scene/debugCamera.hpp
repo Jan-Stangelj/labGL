@@ -1,6 +1,6 @@
 #pragma once
 
-#include "gl/buffer.hpp"
+#include "gl/raii/buffer.hpp"
 
 #include "SDL3/SDL.h"
 
