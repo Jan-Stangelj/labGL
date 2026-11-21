@@ -15,9 +15,9 @@ int main(void) {
     gl::init(true);
 
     {
-        gl::window w;
-        w.create(1920, 1080, "labGL");
-        glViewport(0, 0, 1920, 1080);
+        gl::window window;
+        window.create(1920, 1080, "labGL");
+        glViewport(0, 0, window.getWidth(), window.getHeight());
 
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LESS);
@@ -105,9 +105,9 @@ int main(void) {
             while (SDL_PollEvent(&event)) {
                 if (event.type == SDL_EVENT_QUIT || event.type == SDL_EVENT_WINDOW_CLOSE_REQUESTED) running = false;
 
-                if (event.type == SDL_EVENT_MOUSE_BUTTON_DOWN && event.button.button == SDL_BUTTON_RIGHT) mouseCaptured = w.captureMouse(true);
-                if (event.type == SDL_EVENT_MOUSE_BUTTON_UP   && event.button.button == SDL_BUTTON_RIGHT) { mouseCaptured = false; w.captureMouse(false); }
-                if (event.type == SDL_EVENT_WINDOW_FOCUS_LOST) { mouseCaptured = false; w.captureMouse(false); }
+                if (event.type == SDL_EVENT_MOUSE_BUTTON_DOWN && event.button.button == SDL_BUTTON_RIGHT) mouseCaptured = window.captureMouse(true);
+                if (event.type == SDL_EVENT_MOUSE_BUTTON_UP   && event.button.button == SDL_BUTTON_RIGHT) { mouseCaptured = false; window.captureMouse(false); }
+                if (event.type == SDL_EVENT_WINDOW_FOCUS_LOST) { mouseCaptured = false; window.captureMouse(false); }
 
                 if (event.type == SDL_EVENT_MOUSE_MOTION && mouseCaptured) cam.updateDirection(event.motion.xrel, -event.motion.yrel);
             }
@@ -130,7 +130,7 @@ int main(void) {
 
             glDrawArrays(GL_TRIANGLES, 0, indexCount);
             
-            w.swapBuffers();
+            window.swapBuffers();
         }
     }
 

@@ -26,10 +26,15 @@ namespace gl {
 
         bool captureMouse(bool capture) const;
 
+        int getWidth() const;
+        int getHeight() const;
+
     private:
 
+        void destroy();
+
         SDL_Window* m_window = nullptr;
-        SDL_GLContext m_context = 0;
+        SDL_GLContext m_context = nullptr;
 
         GLuint m_emptyVAO = 0;
 
