@@ -75,7 +75,7 @@ int main(void) {
         indexBuffer.create(sizeof(indices), indices);
 
         gl::texture2d texture;
-        texture.create("../assets/textures/red_brick.png", GL_RGB8, true);
+        texture.create("assets/textures/red_brick.png", GL_RGB8, true);
         texture.generateMipmaps();
 
         gl::sampler sampler;
@@ -91,7 +91,7 @@ int main(void) {
         gl::debugCamera cam;
 
         gl::shader simpleShader;
-        simpleShader.loadFromFile("../assets/shaders/shader.vert", "../assets/shaders/shader.frag");
+        simpleShader.loadFromFile("assets/shaders/shader.vert", "assets/shaders/shader.frag");
 
         gl::stopwatch time;
         double deltaTime = 0.0;

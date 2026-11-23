@@ -10,3 +10,6 @@
 [submodule "vendor/stb/include/stb"]
 	path = vendor/stb/include/stb
 	url = https://github.com/nothings/stb.git
+[submodule "vendor/fastgltf"]
+	path = vendor/fastgltf
+	url = https://github.com/spnda/fastgltf.git

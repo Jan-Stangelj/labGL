@@ -19,6 +19,7 @@ add_subdirectory("vendor/glm")
 add_subdirectory("vendor/glad")
 add_subdirectory("vendor/stb")
 add_subdirectory("vendor/spdlog")
+add_subdirectory("vendor/fastgltf")
 
 file(GLOB_RECURSE "SOURCES" CONFIGURE_DEPENDS "src/*.cpp")
 add_executable("labGL" "${SOURCES}")
@@ -37,4 +38,4 @@ target_include_directories("labGL" PRIVATE ${PROJECT_SOURCE_DIR}/include)
 # Keep trace/debug logging available in Debug builds, compile it out everywhere else.
 target_compile_definitions("labGL" PRIVATE $<IF:$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>,SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE,SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_INFO>)
 
-target_link_libraries("labGL" PRIVATE SDL3::SDL3-static glm glad stb spdlog::spdlog)
+target_link_libraries("labGL" PRIVATE SDL3::SDL3-static glm::glm glad stb spdlog::spdlog fastgltf::fastgltf)
