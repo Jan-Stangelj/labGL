@@ -28,7 +28,6 @@ bool gl::init(bool debug) {
     g_debugContextRequested = debug;
 
     spdlog::set_default_logger(std::make_shared<spdlog::logger>("gl", std::make_shared<spdlog::sinks::stdout_color_sink_mt>()));
-    spdlog::set_pattern("[%T.%e] [%-7l] [%s:%#] %v");
     spdlog::set_level(debug ? spdlog::level::trace : spdlog::level::info);
     spdlog::flush_on(spdlog::level::warn);
 
