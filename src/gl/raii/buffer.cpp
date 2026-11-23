@@ -1,6 +1,6 @@
 #include "gl/raii/buffer.hpp"
 
-#include <iostream>
+#include "spdlog/spdlog.h"
 
 gl::buffer::~buffer() {
     if (m_id != 0) glDeleteBuffers(1, &m_id);
@@ -17,7 +17,7 @@ gl::buffer::buffer(buffer&& other) noexcept {
 gl::buffer& gl::buffer::operator=(buffer&& other) noexcept {
     if (this != &other) {
         if (m_id != 0) {
-            std::cout << "WARNING: Buffer already present on move destination. Overwriting.\n";
+            SPDLOG_TRACE("buffer move-assign discarded an existing buffer");
             glDeleteBuffers(1, &m_id);
         }
         m_id = other.m_id;
@@ -31,12 +31,12 @@ gl::buffer& gl::buffer::operator=(buffer&& other) noexcept {
 
 bool gl::buffer::create(GLsizeiptr size, const void* data) {
     if (size == 0) {
-        std::cerr << "ERROR: Cannot create buffer with size of 0. Aborting\n";
+        SPDLOG_ERROR("buffer::create: size must be greater than 0");
         return false;
     }
 
     if (m_id != 0) {
-        std::cout << "WARNING: Buffer already present. Deleting and re-allocating.\n";
+        SPDLOG_DEBUG("buffer::create: reallocating existing buffer");
         glDeleteBuffers(1, &m_id);
     }
 
@@ -44,7 +44,7 @@ bool gl::buffer::create(GLsizeiptr size, const void* data) {
     glCreateBuffers(1, &m_id);
 
     if (m_id == 0) {
-        std::cout << "ERROR: Failed to create buffer. Aborting.\n";
+        SPDLOG_ERROR("glCreateBuffers failed");
         return false;
     }
 
@@ -57,15 +57,15 @@ bool gl::buffer::create(GLsizeiptr size, const void* data) {
 
 bool gl::buffer::write(GLintptr offset, GLsizeiptr size, const void* data) const {
     if (m_id == 0) {
-        std::cout << "NOTE: write called with no buffer present. Did nothing.\n";
+        SPDLOG_WARN("buffer::write called without a buffer");
         return false;
     }
     if (data == nullptr) {
-        std::cout << "WARNING: no data passed to buffer write. Aborting.\n";
+        SPDLOG_ERROR("buffer::write: null data");
         return false;
     }
     if (offset < 0 || size < 0 || offset > m_size || size > m_size - offset) {
-        std::cerr << "ERROR: write range is outside buffer bounds. Aborting.\n";
+        SPDLOG_ERROR("buffer::write: range [{}, {}) exceeds buffer size {}", offset, offset + size, m_size);
         return false;
     }
 
@@ -75,7 +75,7 @@ bool gl::buffer::write(GLintptr offset, GLsizeiptr size, const void* data) const
 
 bool gl::buffer::bind(bufferTarget type, GLuint bindingPoint) const {
     if (m_id == 0) {
-        std::cout << "NOTE: bind called with no buffer present. Did nothing.\n";
+        SPDLOG_WARN("buffer::bind called without a buffer");
         return false;
     }
 

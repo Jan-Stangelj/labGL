@@ -2,7 +2,8 @@
 
 #include "stb/stb_image.h"
 
-#include <iostream>
+#include "spdlog/spdlog.h"
+
 #include <cmath>
 #include <array>
 
@@ -25,7 +26,7 @@ gl::texture2d::texture2d(texture2d&& other) noexcept {
 gl::texture2d& gl::texture2d::operator=(texture2d&& other) noexcept {
     if (this != &other) {
         if (m_id != 0) {
-            std::cout << "WARNING: 2D texture already present on move destination. Overwriting.\n";
+            SPDLOG_TRACE("texture2d move-assign discarded an existing texture");
             glDeleteTextures(1, &m_id);
         }
         m_id = other.m_id;
@@ -43,12 +44,12 @@ gl::texture2d& gl::texture2d::operator=(texture2d&& other) noexcept {
 
 bool gl::texture2d::create(GLsizei width, GLsizei height, GLenum internalFormat, bool mipmapping) {
     if (width <= 0 || height <= 0) {
-        std::cerr << "ERROR: Cannot create texture with dimensions, aborting: " << width << ' ' << height << '\n';
+        SPDLOG_ERROR("texture2d::create: invalid dimensions {}x{}", width, height);
         return false;
     }
 
     if (m_id != 0) {
-        std::cout << "WARNING: 2D texture already present. Deleting and re-allocating\n";
+        SPDLOG_DEBUG("texture2d::create: reallocating existing texture");
         glDeleteTextures(1, &m_id);
     }
 
@@ -56,7 +57,7 @@ bool gl::texture2d::create(GLsizei width, GLsizei height, GLenum internalFormat,
     glCreateTextures(GL_TEXTURE_2D, 1, &m_id);
 
     if (m_id == 0) {
-        std::cout << "ERROR: Failed to create 2D texture. Aborting.\n";
+        SPDLOG_ERROR("glCreateTextures failed");
         return false;
     }
 
@@ -68,6 +69,8 @@ bool gl::texture2d::create(GLsizei width, GLsizei height, GLenum internalFormat,
     m_width = width;
     m_height = height;
     m_mips = mips;
+
+    SPDLOG_DEBUG("texture2d created: {}x{}, {} mip level(s), internal format {:#x}", width, height, mips, internalFormat);
 
     return true;
 }
@@ -83,8 +86,11 @@ bool gl::texture2d::create(const char* file, GLenum internalFormat, bool mipmapp
     if (hdr) data = stbi_loadf(file, &w, &h, &n, 0);
     else data = stbi_load(file, &w, &h, &n, 0);
 
+    if (n < 1 || n > 4) { SPDLOG_ERROR("unsupported channel count {}", n); stbi_image_free(data); return false; }
+
     if (data == nullptr) {
-        std::cerr << "ERROR: Failed to load 2D texture " << file << '\n';
+        [[maybe_unused]] const char* reason = stbi_failure_reason();
+        SPDLOG_ERROR("stbi_load failed for \"{}\": {}", file, reason != nullptr ? reason : "unknown");
         return false;
     }
 
@@ -94,7 +100,7 @@ bool gl::texture2d::create(const char* file, GLenum internalFormat, bool mipmapp
     }
 
     std::array<GLenum, 5> dataFormatLUT = {GL_RGBA, GL_R, GL_RG, GL_RGB, GL_RGBA };
-    if (loadData(dataFormatLUT[n], dataType, data) == false) {
+    if (loadData(dataFormatLUT.at(n), dataType, data) == false) {
         stbi_image_free(data);
         return false;
     }
@@ -105,7 +111,7 @@ bool gl::texture2d::create(const char* file, GLenum internalFormat, bool mipmapp
 
 bool gl::texture2d::loadData(GLenum dataFormat, GLenum dataType, const void* data) const {
     if (m_id == 0) {
-        std::cout << "NOTE: loadData called with no 2D texture present. Did nothing.\n";
+        SPDLOG_WARN("texture2d::loadData called without a texture");
         return false;
     }
 
@@ -115,12 +121,12 @@ bool gl::texture2d::loadData(GLenum dataFormat, GLenum dataType, const void* dat
 
 bool gl::texture2d::generateMipmaps() const {
     if (m_id == 0) {
-        std::cout << "NOTE: generateMipmaps called with no 2D texture present. Did nothing.\n";
+        SPDLOG_WARN("texture2d::generateMipmaps called without a texture");
         return false;
     }
 
     if (m_mips == 1) {
-        std::cout << "NOTE: generateMipmaps called with only 1 active 2D texture mip level. Did nothing.\n";
+        SPDLOG_TRACE("texture2d::generateMipmaps: no mip levels allocated");
         return false;
     }
 
@@ -130,7 +136,7 @@ bool gl::texture2d::generateMipmaps() const {
 
 bool gl::texture2d::bind(GLuint bindingPoint) const {
     if (m_id == 0) {
-        std::cout << "NOTE: bind called with no 2D texture present. Did nothing.\n";
+        SPDLOG_WARN("texture2d::bind called without a texture");
         return false;
     }
 

@@ -1,10 +1,15 @@
 #include "gl/raii/sampler.hpp"
 
+#include "spdlog/spdlog.h"
+
 #include <algorithm>
-#include <iostream>
 
 gl::sampler::sampler() {
     glCreateSamplers(1, &m_id);
+    if (m_id == 0) {
+        SPDLOG_ERROR("glCreateSamplers failed");
+        return;
+    }
 
     setWrap(REPEAT);
     setFilter(ANISOTROPIC);
@@ -21,7 +26,7 @@ gl::sampler::sampler(sampler&& other) noexcept {
 gl::sampler& gl::sampler::operator=(sampler&& other) noexcept {
     if (this != &other) {
         if (m_id != 0) {
-            std::cout << "WARNING: sampler already present on move destination. Overwriting.\n";
+            SPDLOG_TRACE("sampler move-assign discarded an existing sampler");
             glDeleteSamplers(1, &m_id);
         }
         m_id = other.m_id;
@@ -32,7 +37,7 @@ gl::sampler& gl::sampler::operator=(sampler&& other) noexcept {
 
 bool gl::sampler::bind(GLuint bindingPoint) const {
     if (m_id == 0) {
-        std::cout << "NOTE: bind called with no sampler present. Did nothing.\n";
+        SPDLOG_WARN("sampler::bind called without a sampler");
         return false;
     }
     glBindSampler(bindingPoint, m_id);
@@ -41,7 +46,7 @@ bool gl::sampler::bind(GLuint bindingPoint) const {
 
 void gl::sampler::setWrap(samplerWrap wrap) {
     if (m_id == 0) {
-        std::cout << "NOTE: setWrap called with no sampler present. Did nothing.\n";
+        SPDLOG_WARN("sampler::setWrap called without a sampler");
         return;
     }
     glSamplerParameteri(m_id, GL_TEXTURE_WRAP_S, wrap);
@@ -51,7 +56,7 @@ void gl::sampler::setWrap(samplerWrap wrap) {
 
 void gl::sampler::setFilter(samplerFilter filter) {
     if (m_id == 0) {
-        std::cout << "NOTE: setFilter called with no sampler present. Did nothing.\n";
+        SPDLOG_WARN("sampler::setFilter called without a sampler");
         return;
     }
     if (filter == BILINEAR) {
@@ -71,10 +76,13 @@ void gl::sampler::setFilter(samplerFilter filter) {
 
 void gl::sampler::setAnisotropy(GLfloat level) {
     if (m_id == 0) {
-        std::cout << "NOTE: setAnisotropy called with no sampler present. Did nothing.\n";
+        SPDLOG_WARN("sampler::setAnisotropy called without a sampler");
         return;
     }
     float maxAniso = 0.0f;
     glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY, &maxAniso);
+    if (level > maxAniso) {
+        SPDLOG_DEBUG("anisotropy {} clamped to driver maximum {}", level, maxAniso);
+    }
     glSamplerParameterf(m_id, GL_TEXTURE_MAX_ANISOTROPY, std::min(level, maxAniso));
 }

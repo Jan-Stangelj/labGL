@@ -1,9 +1,10 @@
 #include "gl/raii/shader.hpp"
 
 #include <string>
-#include <iostream>
 #include <sstream>
 #include <fstream>
+
+#include "spdlog/spdlog.h"
 
 gl::shader::~shader() {
     if (m_id) glDeleteProgram(m_id);
@@ -52,7 +53,7 @@ bool gl::shader::loadFromFile(const char* vertexPath, const char* fragmentPath) 
 
     } catch (std::ifstream::failure& e) {
 
-        std::cout << "WARNING: Failed to read shader files, did nothing:\n- Vertex: " << vertexPath << "\n- Fragment: " << fragmentPath << '\n';
+        SPDLOG_ERROR("failed to read shader source: vertex=\"{}\", fragment=\"{}\": {}", vertexPath, fragmentPath, e.what());
         return false;
     }
 
@@ -61,7 +62,7 @@ bool gl::shader::loadFromFile(const char* vertexPath, const char* fragmentPath) 
 
 bool gl::shader::loadFromText(const char* vertexCode, const char* fragmentCode) {
     if (vertexCode == nullptr || fragmentCode == nullptr) {
-        std::cout << "WARNING: No shader source code provided. Did nothing.\n";
+        SPDLOG_ERROR("shader::loadFromText: null source");
         return false;
     }
 
@@ -78,7 +79,7 @@ bool gl::shader::loadFromText(const char* vertexCode, const char* fragmentCode) 
     glGetShaderiv(vertex, GL_COMPILE_STATUS, &success);
     if (!success) {
         glGetShaderInfoLog(vertex, 512, nullptr, infoLog);
-        std::cerr << "ERROR: Vertex shader compilation failed, aborting: " << infoLog << "\n";
+        SPDLOG_ERROR("vertex shader compile failed:\n{}", infoLog);
         glDeleteShader(vertex);
         return false;
     }
@@ -90,7 +91,7 @@ bool gl::shader::loadFromText(const char* vertexCode, const char* fragmentCode) 
     glGetShaderiv(fragment, GL_COMPILE_STATUS, &success);
     if (!success) {
         glGetShaderInfoLog(fragment, 512, nullptr, infoLog);
-        std::cerr << "ERROR: Fragment shader compilation failed, aborting: " << infoLog << "\n";
+        SPDLOG_ERROR("fragment shader compile failed:\n{}", infoLog);
         glDeleteShader(vertex);
         glDeleteShader(fragment);
         return false;
@@ -104,7 +105,7 @@ bool gl::shader::loadFromText(const char* vertexCode, const char* fragmentCode) 
     glGetProgramiv(program, GL_LINK_STATUS, &success);
     if (!success) {
         glGetProgramInfoLog(program, 512, nullptr, infoLog);
-        std::cerr << "ERROR: Linking shader programs failed, aborting: " << infoLog << "\n";
+        SPDLOG_ERROR("program link failed:\n{}", infoLog);
         glDeleteShader(vertex);
         glDeleteShader(fragment);
         glDeleteProgram(program);
@@ -112,10 +113,12 @@ bool gl::shader::loadFromText(const char* vertexCode, const char* fragmentCode) 
     }
 
     if (m_id != 0) {
-        std::cout << "WARNING: Shader already created, overwriting.\n";
+        SPDLOG_DEBUG("shader::loadFromText: replacing existing program");
         glDeleteProgram(m_id);
     }
     m_id = program;
+
+    SPDLOG_DEBUG("shader program linked (id {})", m_id);
 
     glDeleteShader(vertex);
     glDeleteShader(fragment);
@@ -125,7 +128,7 @@ bool gl::shader::loadFromText(const char* vertexCode, const char* fragmentCode) 
 
 bool gl::shader::use() const {
     if (m_id == 0) {
-        std::cout << "NOTE: Use called with no shader present. Did nothing.\n";
+        SPDLOG_WARN("shader::use called without a program");
         return false;
     }
     
