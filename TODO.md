@@ -13,7 +13,7 @@ Main:
 
 Misc (in no order):
 - resizable viewport
-- include stb as subdirectory
+- ~~include stb as subdirectory~~
 - ~~optimized logging~~
 - ~~no copy only move in window and move in debugcam~~
 - ~~simple stopwatch class~~

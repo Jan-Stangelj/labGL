@@ -7,3 +7,6 @@
 [submodule "vendor/spdlog"]
 	path = vendor/spdlog
 	url = https://github.com/gabime/spdlog.git
+[submodule "vendor/stb/include/stb"]
+	path = vendor/stb/include/stb
+	url = https://github.com/nothings/stb.git
