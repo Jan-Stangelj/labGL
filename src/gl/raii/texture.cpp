@@ -1,4 +1,4 @@
-#include "gl/raii/texture2d.hpp"
+#include "gl/raii/texture.hpp"
 
 #include "stb/stb_image.h"
 

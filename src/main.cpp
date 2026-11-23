@@ -2,7 +2,7 @@
 #include "gl/platform/window.hpp"
 #include "gl/raii/shader.hpp"
 #include "gl/raii/buffer.hpp"
-#include "gl/raii/texture2d.hpp"
+#include "gl/raii/texture.hpp"
 #include "gl/scene/debugCamera.hpp"
 #include "gl/util/stopwatch.hpp"
 #include "gl/raii/sampler.hpp"
