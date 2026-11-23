@@ -195,7 +195,7 @@ namespace {
         switch (severity) {
             case GL_DEBUG_SEVERITY_HIGH:         return spdlog::level::err;
             case GL_DEBUG_SEVERITY_MEDIUM:       return spdlog::level::warn;
-            case GL_DEBUG_SEVERITY_LOW:          return spdlog::level::info;
+            case GL_DEBUG_SEVERITY_LOW:          return spdlog::level::warn;
             case GL_DEBUG_SEVERITY_NOTIFICATION: return spdlog::level::debug;
             default:                             return spdlog::level::debug;
         }

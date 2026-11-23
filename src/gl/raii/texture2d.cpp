@@ -70,8 +70,6 @@ bool gl::texture2d::create(GLsizei width, GLsizei height, GLenum internalFormat,
     m_height = height;
     m_mips = mips;
 
-    SPDLOG_DEBUG("texture2d created: {}x{}, {} mip level(s), internal format {:#x}", width, height, mips, internalFormat);
-
     return true;
 }
 

@@ -82,7 +82,7 @@ void gl::sampler::setAnisotropy(GLfloat level) {
     float maxAniso = 0.0f;
     glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY, &maxAniso);
     if (level > maxAniso) {
-        SPDLOG_DEBUG("anisotropy {} clamped to driver maximum {}", level, maxAniso);
+        SPDLOG_INFO("anisotropy {} clamped to driver maximum {}", level, maxAniso);
     }
     glSamplerParameterf(m_id, GL_TEXTURE_MAX_ANISOTROPY, std::min(level, maxAniso));
 }

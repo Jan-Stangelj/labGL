@@ -118,8 +118,6 @@ bool gl::shader::loadFromText(const char* vertexCode, const char* fragmentCode) 
     }
     m_id = program;
 
-    SPDLOG_DEBUG("shader program linked (id {})", m_id);
-
     glDeleteShader(vertex);
     glDeleteShader(fragment);
 
